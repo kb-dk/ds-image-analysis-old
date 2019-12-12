@@ -1,0 +1,171 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: KB API
+  license:
+    name: Apache 2.0
+servers:
+  - url: https://kb.dk/api/v1
+paths:
+  /get:
+    get:
+      summary: Request a resource available at the Royal Danish Library
+      operationId: getResource
+      parameters:
+        - in: query
+          name: id
+          description: The ID for a resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resource as binary
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Response if the ID was unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /lookup:
+    get:
+      summary: Request meta data available at the Royal Danish Library
+      operationId: getMetaData
+      parameters:
+        - in: query
+          name: ids
+          description: One or more IDs for meta data records
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+        - in: query
+          name: format
+          description: Optional delivery format for the meta data
+          required: false
+          schema:
+            type: string
+            enum: [json]
+            default: json
+      responses:
+        '200':
+          description: A list of [id, json] pairs with the requested IDs and their meta data. IDs which could not be resolved are removed from the list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdMetaPairs'
+  /hello:
+    get:
+      summary: Request a Hello World message, for testing purposes
+      operationId: getGreeting
+      parameters:
+        - name: alternateHello
+          in: query
+          description: Optional alternative to using the word 'Hello' in the reply
+          required: false
+          schema:
+            type: string
+            default: World
+      responses:
+        '200':
+          description: A JSON structure containing a Hello World message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloReply"
+  /imageDHash:
+    get:
+      summary: Request image DHash from an image at the Royal Danish Library
+      operationId: getImageDHash
+      parameters:
+        - in: query
+          name: imgPath
+          description: Image path for the image
+          required: true
+          schema:
+              type: string
+      responses:
+        '200':
+          description: The DHash value for the image
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /imagePHash:
+    get:
+      summary: Request image PHash from an image at the Royal Danish Library
+      operationId: getImagePHash
+      parameters:
+        - in: query
+          name: imgPath
+          description: Image path for the image
+          required: true
+          schema:
+              type: string
+      responses:
+        '200':
+          description: ThePHash value for the image
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /imageCHash:
+    get:
+      summary: Request image hash value from an image at the Royal Danish Library collectino of images sorted by content
+      operationId: getImageCHash
+      parameters:
+        - in: query
+          name: imgPath
+          description: Image path for the image
+          required: true
+          schema:
+              type: string
+      responses:
+        '200':
+          description: TheCHash value for the image
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+components:
+  schemas:
+  # https://swagger.io/specification/#schemaObject
+    IdMetaPairs:
+      type: object
+      properties:
+        id:
+          type: string
+        meta:
+          type: string
+
+    HelloReply:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Greeting from the API
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
