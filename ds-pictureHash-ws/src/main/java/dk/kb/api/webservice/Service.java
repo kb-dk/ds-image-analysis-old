@@ -1,4 +1,4 @@
-package dk.kb.digisam.webservice;
+package dk.kb.api.webservice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,14 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/")
-public class PictureHashService {
+public class Service {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     
-    public PictureHashService() {
+    public Service() {
         log.info("Initializing service");
     }
-    
+
+    /* Unmodified from the templade webapp. Not related to the Swagger definition! */
     @GET
     @Path("getHello")
     @Produces(MediaType.APPLICATION_JSON)

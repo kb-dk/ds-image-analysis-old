@@ -1,23 +1,26 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-  <display-name>ds-pictureHash Service</display-name>
+  <display-name>KB API Service</display-name>
 
   <servlet>
-    <servlet-name>ds-pictureHash Service</servlet-name>
+    <servlet-name>KB_API_REST_Service</servlet-name>
     <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>
-      <param-value>dk.kb.digisam.webservice.PictureHashApplication</param-value>
+      <param-value>dk.kb.api.webservice.APIApplication</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ds-pictureHash Service</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <servlet-name>KB_API_REST_Service</servlet-name>
+    <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 
   <listener>
-    <listener-class>dk.kb.digisam.webservice.PictureHashContextListener</listener-class>
+    <listener-class>dk.kb.api.webservice.APIContextListener</listener-class>
   </listener>
+
+
+
 </web-app>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="ds-pictureHash.war">
+
+    <Environment name="ds-pictureHash-logback-config"
+        value="${user.home}/Code/Repository/Digitale_Samlinger/ds-pictureHash/conf/localtomcat9_halh/logback.xml"
+        type="java.lang.String"
+        override="false"/>
+
+    <Environment name="application-config"
+        value="${user.home}/Code/Repository/Digitale_Samlinger/ds-pictureHash/conf/ds-pictureHash.yaml"
+        type="java.lang.String"
+        override="false"/>
+
+</Context>
+
