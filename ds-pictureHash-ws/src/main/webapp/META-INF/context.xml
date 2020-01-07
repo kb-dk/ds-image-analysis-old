@@ -1,12 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Context override="true" docBase="/app/tomcat-apps/ds-pictureHash.war">
+<Context override="true" docBase="ds-pictureHash.war">
 
+    <!--Set project.home as env var to make this work... -->
     <Environment name="ds-pictureHash-logback-config"
-        value="/app/conf/logback.xml"
+        value="${project.home}/localtomcat9_halh/logback.xml"
         type="java.lang.String"
         override="false"/>
+
     <Environment name="application-config"
-        value="/app/conf/ds-pictureHash.yaml"
+        value="${project.home}/conf/ds-pictureHash.yaml"
         type="java.lang.String"
         override="false"/>
 
