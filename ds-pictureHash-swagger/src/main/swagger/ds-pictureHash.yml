@@ -9,40 +9,40 @@ servers:
 paths:
   # Displays the DHash value given an URL like
   #   http://localhost:8080/ds-pictureHash/api/imageDHash/imgPath/?imgPath=<path to the image>
-  /imageDHash/imgPath:
+  /imageDHash/imgURL:
     get:
-      summary: 'Request imageDPHash from an image at the Royal Danish Library'
+      summary: 'Request imageDHash from an image at the Royal Danish Library'
       operationId: getImageDHash
       parameters:
-        - name: imgPath
+        - name: imgURL
           in: query
-          description: 'Path for the image found in Cumulus image server'
+          description: 'URL for the image found in Cumulus image server'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'TheDHash value for the image'
+          description: 'The DHash value as an integer for the image'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HashReply'
   # Displays the PHash value given an URL like
   #   http://localhost:8080/ds-pictureHash/api/imagePHash/imgPath/?imgPath=<path to the image>
-  /imagePHash/imgPath:
+  /imagePHash/imgURL:
     get:
       summary: 'Request image PHash from an image at the Royal Danish Library'
       operationId: getImagePHash
       parameters:
-        - name: imgPath
+        - name: imgURL
           in: query
-          description: 'Path for the image found in Cumulus image server'
+          description: 'URL for the image found in Cumulus image server'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'ThePHash value for the image'
+          description: 'The PHash value as an integer for the image'
           content:
             application/json:
               schema:
@@ -56,4 +56,4 @@ components:
       properties:
         message:
           type: string
-          description: Hash value from the API
+          description: Integer Hash value converted to a string from the API

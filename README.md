@@ -11,6 +11,7 @@ http://localhost:8080/ds-pictureHash/api/imagePHash/imgPath/?imgPath=<filepath>
 The DHash can be accessed by 
 http://localhost:8080/ds-pictureHash/api/imageDHash/imgPath/?imgPath=<filepath> 
 
-
-
-
+# Build 
+The project can be built with 
+mvn package
+The war-file can then be started by using tomcat 9
