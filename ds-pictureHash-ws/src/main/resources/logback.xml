@@ -1,6 +1,0 @@
-<configuration scan="true" scanPeriod="5 minutes">
-    <insertFromJNDI env-entry-name="java:comp/env/ds-pictureHash-logback-config" as="logbackConfiguration"/>
-
-    <include file="${logbackConfiguration}"/>
-<!--    <include file="file:/home/halh/projects/ds-pictureHash/conf/ocp/logback.xml"/>-->
-</configuration>
