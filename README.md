@@ -1,4 +1,4 @@
-# Picture Hash
+# Imaga Analysis Webapp
 
 REST API for internal & external use.
 
