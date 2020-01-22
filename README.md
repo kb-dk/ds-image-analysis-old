@@ -1,4 +1,4 @@
-# Image Analysis Webapp
+# Image Analysis API
 
 REST API for internal & external use.
 
