@@ -1,4 +1,4 @@
-# Imaga Analysis Webapp
+# Image Analysis Webapp
 
 REST API for internal & external use.
 
