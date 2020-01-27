@@ -1,4 +1,4 @@
-# Picture Hash
+# Image Analysis API
 
 REST API for internal & external use.
 
