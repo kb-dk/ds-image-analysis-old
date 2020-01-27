@@ -1,4 +1,4 @@
-package dk.kb.digisam.webservice;
+package dk.kb.api.webservice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import javax.servlet.ServletContextListener;
  * context is deployed/initalized.
  */
 
-public class PictureHashContextListener implements ServletContextListener {
+public class APIContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
 
@@ -27,20 +27,20 @@ public class PictureHashContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
-            log.info("Initializing DigiSam service v{}", getClass().getPackage().getImplementationVersion());
+            log.info("Initializing Template service v{}", getClass().getPackage().getImplementationVersion());
             InitialContext ctx = new InitialContext();
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } 
-        log.info("DigiSam service initialized.");
+        log.info("Template service initialized.");
     }
 
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        log.debug("DigiSam service destroyed");
+        log.debug("Template service destroyed");
     }
 
 }

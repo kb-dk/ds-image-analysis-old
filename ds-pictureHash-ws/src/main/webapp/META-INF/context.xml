@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context override="true" docBase="ds-pictureHash.war">
+
+    <Environment name="application-config"
+        value="${project.home}/conf/ds-pictureHash.yaml"
+        type="java.lang.String"
+        override="false"/>
+
+</Context>
+

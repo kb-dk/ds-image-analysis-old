@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dk.kb.api</groupId>
+        <artifactId>ds-pictureHash</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <packaging>war</packaging>
+    <artifactId>ds-pictureHash-ws</artifactId>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+    </repositories>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>dk.kb.api</groupId>
+            <artifactId>ds-pictureHash-swagger</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kilianB</groupId>
+            <artifactId>JImageHash</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- Apache CXF and servlet stuff -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>${org.apache.cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <version>${org.apache.cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${org.apache.cxf.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <!-- Junit dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.5.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!--Download Swagger UI webjar.  -->
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>generate swagger ui</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>swagger-ui</artifactId>
+                                    <version>${swagger-ui.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+
+                            <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
+                            <includes>META-INF/resources/webjars/swagger-ui/${swagger-ui.version}/*</includes>
+                            <excludes>**/index.html*</excludes>
+                            <!--Add more excludes if more files must be implemented-->
+                        </configuration>
+                    </execution>
+                    <!--Get openapi.json to swagger-ui  -->
+                    <execution>
+                        <id>get openapi.json</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>dk.kb.api</groupId>
+                                    <artifactId>ds-pictureHash-swagger</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+
+                            <outputDirectory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/swagger-ui/${swagger-ui.version}</outputDirectory>
+                            <includes>openapi.json</includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                    <!-- Add Swagger UI resources to the war file. -->
+                    <webResources combine.children="append">
+                        <resource>
+                            <directory>
+                                ${project.build.directory}/swagger-ui/META-INF/resources/webjars/swagger-ui/${swagger-ui.version}
+                            </directory>
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                            <targetPath>swagger-ui</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>${test.groups}</groups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
