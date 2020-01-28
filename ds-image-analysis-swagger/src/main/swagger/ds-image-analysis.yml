@@ -16,13 +16,13 @@ paths:
       parameters:
         - name: imgURL
           in: query
-          description: 'URL for the image found in Cumulus image server'
+          description: 'URL for the image'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'The DHash value as an integer for the image'
+          description: 'The returned value will be a string of a combination of the following values: The hash size ( 20, 42, 72, 110, 156, 210, 272), the precision of the DHash (Simple, double, triple) and finally the DHash value as a binary for the image'
           content:
             application/json:
               schema:
@@ -31,18 +31,18 @@ paths:
   #   http://localhost:8080/ds-pictureHash/api/imagePHash/imgPath/?imgPath=<path to the image>
   /imagePHash/imgURL:
     get:
-      summary: 'Request image PHash from an image at the Royal Danish Library'
+      summary: 'Request image PHash from an image at the given imgURL'
       operationId: getImagePHash
       parameters:
         - name: imgURL
           in: query
-          description: 'URL for the image found in Cumulus image server'
+          description: 'URL for the image'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'The PHash value as an integer for the image'
+          description: 'The returned value will be a string of a combination of the following values: The hash size (16, 46, 64, 100, 144, 196, 256) and the PHash value as a binary for the image'
           content:
             application/json:
               schema:
@@ -56,4 +56,4 @@ components:
       properties:
         message:
           type: string
-          description: Integer Hash value converted to a string from the API
+          description: 'Binary hash value converted to a string from the API'
