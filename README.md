@@ -1,15 +1,15 @@
-# Image Analysis API
+# Picture Hash
 
 REST API for internal & external use.
 
 # Purpose
 
-Webservice that gives an image hash value, where the input parameter is the path to the image. Possible hash values are 
-either Perceptive Hash (PHash) or Difference Hash (DHash). 
+Webservice that gives an series of gradually more refined hash values, where the input parameter is the path to the image. 
+Possible hash values are either Perceptive Hash (PHash) or Difference Hash (DHash). 
 The PHash can be accessed by 
-http://localhost:8080/ds-pictureHash/api/imagePHash/imgPath/?imgPath=<filepath> 
+http://localhost:8080/ds-image-analysis/api/imagePHash/imgURL/?imgPath=<imageURL> 
 The DHash can be accessed by 
-http://localhost:8080/ds-pictureHash/api/imageDHash/imgPath/?imgPath=<filepath> 
+http://localhost:8080/ds-image-analysis/api/imageDHash/imgURL/?imgPath=<imageURL> 
 
 # Build 
 The project can be built with 

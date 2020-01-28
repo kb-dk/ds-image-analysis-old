@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>dk.kb.api</groupId>
-        <artifactId>ds-pictureHash</artifactId>
+        <artifactId>ds-image-analysis</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <packaging>war</packaging>
-    <artifactId>ds-pictureHash-ws</artifactId>
+    <artifactId>ds-image-analysis-ws</artifactId>
 
     <repositories>
         <repository>
@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>dk.kb.api</groupId>
-            <artifactId>ds-pictureHash-swagger</artifactId>
+            <artifactId>ds-image-analysis-swagger</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -154,7 +154,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>dk.kb.api</groupId>
-                                    <artifactId>ds-pictureHash-swagger</artifactId>
+                                    <artifactId>ds-image-analysis-swagger</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>

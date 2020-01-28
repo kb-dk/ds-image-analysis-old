@@ -9,12 +9,12 @@
     </parent>
 
     <modules>
-        <module>ds-pictureHash-swagger</module>
-        <module>ds-pictureHash-ws</module>
+        <module>ds-image-analysis-swagger</module>
+        <module>ds-image-analysis-ws</module>
     </modules>
 
     <groupId>dk.kb.api</groupId>
-    <artifactId>ds-pictureHash</artifactId>
+    <artifactId>ds-image-analysis</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -32,8 +32,8 @@
     </repositories>
 
     <scm>
-        <url>https://github.com/Det-Kongelige-Bibliotek/ds-pictureHash</url>
-        <connection>scm:git:git@github.com:Det-Kongelige-Bibliotek/ds-pictureHash.git</connection>
+        <url>https://github.com/Det-Kongelige-Bibliotek/ds-image-analysis</url>
+        <connection>scm:git:git@github.com:Det-Kongelige-Bibliotek/ds-image-analysis.git</connection>
         <developerConnection>scm:git:ssh://git@sbprojects.statsbiblioteket.dk:7999/ark/java-webapp-template.git
         </developerConnection>
         <tag>HEAD</tag>
@@ -74,6 +74,6 @@
     </developers>
 
     <build>
-        <finalName>ds-pictureHash</finalName>
+        <finalName>ds-image-analysis</finalName>
     </build>
 </project>
