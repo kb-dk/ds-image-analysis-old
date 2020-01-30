@@ -5,6 +5,7 @@ import com.github.kilianB.hashAlgorithms.DifferenceHash;
 import com.github.kilianB.hashAlgorithms.HashingAlgorithm;
 import com.github.kilianB.hashAlgorithms.PerceptiveHash;
 import dk.kb.api.DefaultApi;
+import dk.kb.model.DistanceReplyDto;
 import dk.kb.model.HashReplyDto;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,13 +21,54 @@ import java.nio.file.Paths;
 public class ApiServiceImpl  implements DefaultApi {
 
     private static final String filePath= "imgHash";
-    private int noBit;
+    private int hashSize;
     private StringBuilder replyBuilder = new StringBuilder();
 
     /**
-     * Returns the discrete hash value of the image in imgURL
+     * Find the distance between two hash values
+     * @param hashes The string with two BigInteger hash values separated by a ; character
+     * @return The hamming distance between the two hash values
+     */
+    @Override
+    public DistanceReplyDto getHashDistance(String hashes) {
+        DistanceReplyDto reply = new DistanceReplyDto();
+        if ((hashes != null) && (!hashes.isEmpty()) && (hashes.contains(";"))) {
+            String[] hashValues = hashes.split(";");
+            try {
+                BigInteger hash1 = new BigInteger(hashValues [0]);
+                BigInteger hash2 = new BigInteger(hashValues[1]);
+                if ((hash1.compareTo(BigInteger.ZERO) == -1) || (hash2.compareTo(BigInteger.ZERO) == -1)) {
+                    reply.setMessage("Both hash values has to be positive");
+                    return reply;
+                }
+
+                int distanceBits = 0;
+                // Increase distanceBits by going through the xor'ed number
+                BigInteger x = hash1.xor(hash2);
+                while (x.compareTo(BigInteger.ZERO) == 1)
+                {
+                    // Similar to distanceBits += x & 1
+                    if (x.and(BigInteger.ONE).compareTo(BigInteger.ZERO) == 1) {
+                        distanceBits++;
+                    }
+                    x = x.shiftRight(1);
+                }
+                reply.setMessage(Integer.toString(distanceBits));
+            } catch (NumberFormatException nfe) {
+                reply.setMessage("Both values has to be BigInteger separated by ; character");
+                return reply;
+            }
+        }
+        else {
+            reply.setMessage("The two hash values has to be divided by ; character");
+        }
+        return reply;
+    }
+
+    /**
+     * Returns the discrete hash values of the image in imgURL
      * @param imgURL The path to the image given to the webservice.
-     * @return The discrete hash value
+     * @return The discrete hash values
      */
     @Override
     public HashReplyDto getImageDHash(String imgURL) {
@@ -49,25 +91,25 @@ public class ApiServiceImpl  implements DefaultApi {
     }
 
     private void hashValue(StringBuilder replyBuilder, File imgHash, DifferenceHash.Precision precision) throws IOException {
-        for (int i = 4; i <= 16; i+=2) {
-            noBit = i*(i+1);
+        for (int i = 4; i <= 16; i++) {
+            hashSize = i*(i+1);
             replyBuilder
-                    .append(noBit)
+                    .append(hashSize)
                     .append(",")
                     .append(precision)
                     .append(",")
-                    .append(toBinary(noBit, precision, getDHash(imgHash, noBit, precision).getHashValue()))
+                    .append(getDHash(imgHash, hashSize, precision).getHashValue().toString())
                     .append(" ");
         }
     }
 
     private void hashValue(StringBuilder replyBuilder, File imgHash) throws IOException {
-        for (int i = 4; i <= 16; i+=2) {
-            noBit = i*i;
+        for (int i = 4; i <= 16; i++) {
+            hashSize = i*i;
             replyBuilder
-                    .append(noBit)
+                    .append(hashSize)
                     .append(",")
-                    .append(toBinary(noBit, getPHash(imgHash, noBit).getHashValue()))
+                    .append(getPHash(imgHash, hashSize).getHashValue().toString())
                     .append(" ");
         }
     }

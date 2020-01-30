@@ -40,4 +40,34 @@ class ApiServiceImplTest {
         result = tester.getImagePHash("https://test").toString();
         Assertions.assertEquals(true, result.contains("message: null"));
     }
+
+    @Test
+    void getHashDistance() {
+        ApiServiceImpl tester = new ApiServiceImpl();
+        String result = "";
+        result = tester.getHashDistance("4;1").toString();
+        Assertions.assertEquals(true, result.contains("message: 2"));
+        result = tester.getHashDistance("-4;1").toString();
+        Assertions.assertEquals(true, result.contains("message: Both hash values has to be positive"));
+        result = tester.getHashDistance("4;-11").toString();
+        Assertions.assertEquals(true, result.contains("message: Both hash values has to be positive"));
+        result = tester.getHashDistance("-4;-11").toString();
+        Assertions.assertEquals(true, result.contains("message: Both hash values has to be positive"));
+        result = tester.getHashDistance("abc;def").toString();
+        Assertions.assertEquals(true, result.contains("message: Both values has to be BigInteger separated by ; character"));
+        result = tester.getHashDistance("abc;def;ghi").toString();
+        Assertions.assertEquals(true, result.contains("message: Both values has to be BigInteger separated by ; character"));
+        result = tester.getHashDistance("").toString();
+        Assertions.assertEquals(true, result.contains("message: The two hash values has to be divided by ; character"));
+        result = tester.getHashDistance(null).toString();
+        Assertions.assertEquals(true, result.contains("message: The two hash values has to be divided by ; character"));
+        result = tester.getHashDistance("4;;1").toString();
+        Assertions.assertEquals(true, result.contains("message: Both values has to be BigInteger separated by ; character"));
+        result = tester.getHashDistance("4;4").toString();
+        Assertions.assertEquals(true, result.contains("message: 0"));
+        result = tester.getHashDistance("4;;1").toString();
+        Assertions.assertEquals(true, result.contains("message: Both values has to be BigInteger separated by ; character"));
+        result = tester.getHashDistance("00100011;100011100").toString();
+        Assertions.assertEquals(true, result.contains("message: 19"));
+    }
 }
