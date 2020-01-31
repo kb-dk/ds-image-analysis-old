@@ -51,18 +51,18 @@ paths:
   # http://localhost:8080/ds-image-analysis/api/hashDistance/hashes/?hashes=1243121;32355232
   /hashDistance/hashes:
     get:
-      summary: 'Request the two hashvalues divided by a ;. Each hash value should be BigInteger'
+      summary: 'Request the two hash values divided by a ; character. Each hash value should be BigInteger'
       operationId: getHashDistance
       parameters:
         - name: hashes
           in: query
-          description: 'Hash valuees divided by a ;'
+          description: 'Hash values divided by a ; character'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'Difference between the two hash values (hamming distance)'
+          description: 'Distance between the two hash values (hamming distance)'
           content:
             application/json:
               schema:
