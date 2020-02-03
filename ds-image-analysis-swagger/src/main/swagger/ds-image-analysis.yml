@@ -5,10 +5,10 @@ info:
   license:
     name: Apache 2.0
 servers:
-  - url:  /ds-pictureHash/api
+  - url:  /ds-image-analysis/api
 paths:
   # Displays the DHash value given an URL like
-  #   http://localhost:8080/ds-image-analysis/api/imageDHash/imgPath/?imgPath=<path to the image>
+  #   http://localhost:8080/ds-image-analysis/api/imageDHash/imgURL/?imgURL=<path to the image>
   /imageDHash/imgURL:
     get:
       summary: 'Request imageDHash from an image at the Royal Danish Library'
@@ -28,7 +28,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HashReply'
   # Displays the PHash value given an URL like
-  #   http://localhost:8080/ds-image-analysis/api/imagePHash/imgPath/?imgPath=<path to the image>
+  #   http://localhost:8080/ds-image-analysis/api/imagePHash/imgURL/?imgURL=<path to the image>
   /imagePHash/imgURL:
     get:
       summary: 'Request image PHash from an image at the given imgURL'
