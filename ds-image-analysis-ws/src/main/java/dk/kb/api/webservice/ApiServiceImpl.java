@@ -9,6 +9,8 @@ import dk.kb.model.DistanceReplyDto;
 import dk.kb.model.HashReplyDto;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +18,25 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public class ApiServiceImpl  implements DefaultApi {
 
-    private static final String filePath= "imgHash";
+    private Path uniquePath;
     private int hashSize;
     private StringBuilder replyBuilder = new StringBuilder();
+    private static final Logger log = LoggerFactory.getLogger(ApiServiceImpl.class);
+
+    public ApiServiceImpl() {
+    }
+
+    public Path getUniquePath() {
+        return uniquePath;
+    }
+
+    public void setUniquePath(Path uniquePath) {
+        this.uniquePath = this.uniquePath == null ? uniquePath : this.uniquePath;
+    }
 
     /**
      * Find the distance between two hash values
@@ -74,18 +88,22 @@ public class ApiServiceImpl  implements DefaultApi {
     public HashReplyDto getImageDHash(String imgURL) {
         HashReplyDto reply = new HashReplyDto();
         try {
-            File imgHash = getFile(imgURL);
+            try {
+                File imgHash = getFile(imgURL);
 
-            hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Simple);
-            hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Double);
-            hashValue(replyBuilder,imgHash, DifferenceHash.Precision.Triple);
-            reply.setMessage(replyBuilder.toString());
-
-            Files.deleteIfExists(Paths.get(filePath));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Simple);
+                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Double);
+                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Triple);
+                reply.setMessage(replyBuilder.toString());
+            } catch (MalformedURLException e) {
+                reply.setMessage("The URL: " + imgURL + " is malformed. Please use a valid URL");
+                log.error("The URL: " + imgURL + " is malformed", e);
+            } finally {
+                Files.deleteIfExists(getUniquePath());
+            }
+        } catch (IOException ex) {
+            reply.setMessage("A file error appeared.");
+            log.error("A file error appeared", ex);
         }
         return reply;
     }
@@ -152,34 +170,29 @@ public class ApiServiceImpl  implements DefaultApi {
         try {
             File imgHash = getFile(imgURL);
             HashingAlgorithm pHashAlg = new PerceptiveHash(64);
-            doHash(reply, imgHash, pHashAlg);
+            doHash(reply, imgHash);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            reply.setMessage("The URL: " + imgURL + " is malformed. Please use a valid URL");
+            log.error("The URL: " + imgURL + " is malformed", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            reply.setMessage("A file error appeared.");
+            log.error("A file error appeared", e);
         }
 
         return reply;
     }
 
 
-    private void doHash(HashReplyDto reply, File imgHash, HashingAlgorithm algorithm) throws IOException {
+    private void doHash(HashReplyDto reply, File imgHash) throws IOException {
         hashValue(replyBuilder, imgHash);
-//        Hash hash = null;
-//        hash = algorithm.hash(imgHash);
-//        String str = "";
-//        for (int i = 4; i<9; i+=2) {
-//            str += toBinary(i * i, hash.getHashValue());
-//            str += " ";
-//        }
         reply.setMessage(replyBuilder.toString());
-        Files.deleteIfExists(Paths.get(filePath));
+        Files.deleteIfExists(getUniquePath());
     }
 
     private File getFile(String imgPath) throws IOException {
-        URL webImage;
-        webImage = new URL(imgPath);
-        File imgHash = new File(ApiServiceImpl.filePath);
+        setUniquePath(Files.createTempFile("image", "jpg"));
+        URL webImage = new URL(imgPath);
+        File imgHash = new File(String.valueOf(getUniquePath()));
         FileUtils.copyURLToFile(webImage, imgHash);
         return imgHash;
     }
