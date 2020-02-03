@@ -128,7 +128,6 @@ private static String encodeName(groovy.lang.GString jobName) {
         repo = repo.take(3)
     }
 
-
     def name = ([org, repo] + jobTokens.drop(2)).join("-")
             .replaceAll("\\s", "-")
             .replaceAll("_", "-")
