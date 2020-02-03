@@ -29,6 +29,7 @@ paths:
                 $ref: '#/components/schemas/HashReply'
   # Displays the PHash value given an URL like
   #   http://localhost:8080/ds-image-analysis/api/imagePHash/imgURL/?imgURL=<path to the image>
+
   /imagePHash/imgURL:
     get:
       summary: 'Request image PHash from an image at the given imgURL'
