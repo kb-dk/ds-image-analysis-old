@@ -18,6 +18,8 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
 
         //Stages outside a node declaration runs on the jenkins host
 
+        echo sh(script: 'env|sort', returnStdout: true)
+
         String projectName = encodeName("${JOB_NAME}")
         echo "name=${projectName}"
 
