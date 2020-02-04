@@ -112,6 +112,7 @@ private void recreateProject(String projectName) {
  * @return the jobname as a valid openshift project name
  */
 private static String encodeName(groovy.lang.GString jobName) {
+    echo "input jobName: ${jobName}"
     def jobTokens = jobName.tokenize("/")
     def org = jobTokens[0]
     if(org.contains('-')) {
