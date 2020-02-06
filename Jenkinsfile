@@ -18,6 +18,8 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
 
         //Stages outside a node declaration runs on the jenkins host
 
+        echo sh(script: 'env|sort', returnStdout: true)
+
         String projectName = encodeName("${JOB_NAME}")
         echo "name=${projectName}"
 
@@ -43,10 +45,10 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                     openshift.withProject(projectName) {
 
                         stage("Create build and deploy application") { 
-                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-pictureHash")
-                            openshift.startBuild("ds-pictureHash", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-pictureHash:latest")
-                            openshift.create("route", "edge", "--service=ds-pictureHash")
+                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-picture-hash")
+                            openshift.startBuild("ds-picture-hash", "--from-dir=.", "--follow")
+                            openshift.newApp("ds-picture-hash:latest")
+                            openshift.create("route", "edge", "--service=ds-picture-hash")
                         }
                     }
                 }
@@ -110,7 +112,15 @@ private void recreateProject(String projectName) {
  * @return the jobname as a valid openshift project name
  */
 private static String encodeName(groovy.lang.GString jobName) {
-    def name = jobName
+    def jobTokens = jobName.tokenize("/")
+    def repo = jobTokens[0]
+    if(repo.contains('-')) {
+        repo = repo.tokenize("-").collect{it.take(1)}.join("")
+    } else {
+        repo = repo.take(3)
+    }
+
+    def name = ([repo] + jobTokens.drop(1)).join("-")
             .replaceAll("\\s", "-")
             .replaceAll("_", "-")
             .replace("/", '-')

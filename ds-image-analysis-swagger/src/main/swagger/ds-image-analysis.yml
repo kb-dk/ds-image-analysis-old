@@ -1,0 +1,88 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Picture Hash
+  license:
+    name: Apache 2.0
+servers:
+  - url:  /ds-image-analysis/api
+paths:
+  # Displays the DHash value given an URL like
+  #   http://localhost:8080/ds-image-analysis/api/imageDHash/imgURL/?imgURL=<path to the image>
+  /imageDHash/imgURL:
+    get:
+      summary: 'Request imageDHash from an image at the Royal Danish Library'
+      operationId: getImageDHash
+      parameters:
+        - name: imgURL
+          in: query
+          description: 'URL for the image'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'The returned value will be a string of a combination of the following values: The hash size ( 20, 42, 72, 110, 156, 210, 272), the precision of the DHash (Simple, double, triple) and finally the DHash value as a BigInteger for the image'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HashReply'
+  # Displays the PHash value given an URL like
+  #   http://localhost:8080/ds-image-analysis/api/imagePHash/imgURL/?imgURL=<path to the image>
+
+  /imagePHash/imgURL:
+    get:
+      summary: 'Request image PHash from an image at the given imgURL'
+      operationId: getImagePHash
+      parameters:
+        - name: imgURL
+          in: query
+          description: 'URL for the image'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'The returned value will be a string of a combination of the following values: The hash size (16, 46, 64, 100, 144, 196, 256) and the PHash value as a BigInteger for the image'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HashReply'
+  # Displays the distance between two hash values that are entered separated by a ;. URL like
+  # http://localhost:8080/ds-image-analysis/api/hashDistance/hashes/?hashes=1243121;32355232
+  /hashDistance/hashes:
+    get:
+      summary: 'Request the two hash values divided by a ; character. Each hash value should be BigInteger'
+      operationId: getHashDistance
+      parameters:
+        - name: hashes
+          in: query
+          description: 'Hash values divided by a ; character'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Distance between the two hash values (hamming distance)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistanceReply'
+components:
+  schemas:
+    HashReply:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: 'BigInteger hash value converted to a string from the API'
+    DistanceReply:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: 'The distance between the two hash values.'
