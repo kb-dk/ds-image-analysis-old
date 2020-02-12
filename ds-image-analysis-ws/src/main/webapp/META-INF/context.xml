@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Context override="true" docBase="ds-pictureHash.war">
+<Context override="true" docBase="ds-image-analysis.war">
 
     <Environment name="application-config"
-        value="${project.home}/conf/ds-pictureHash.yaml"
+        value="${project.home}/conf/ds-image-analysis.yaml"
         type="java.lang.String"
         override="false"/>
 
