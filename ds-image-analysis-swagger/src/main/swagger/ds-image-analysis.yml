@@ -49,7 +49,7 @@ paths:
       parameters:
         - name: imgURL
           in: query
-          description: 'URL for the image'
+          description: 'URL of the image'
           required: true
           schema:
             type: string
@@ -112,7 +112,7 @@ components:
     DistanceReply:
       type: object
       required:
-        - message
+        - distance
       properties:
         message:
           type: string

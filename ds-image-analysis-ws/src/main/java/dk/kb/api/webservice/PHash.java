@@ -36,28 +36,37 @@ public class PHash extends ImageHash {
     protected List<String> generateJSON() {
         List<String> reply = new LinkedList<String>();
         try {
-            FileUtils.copyURLToFile(getImgURL(), getHashPath().toFile());
-            File jsonFile = Files.createTempFile("PHash", ".JSON").toFile();
-            jsonFile.deleteOnExit();
-            JsonGenerator jsonGenerator = new JsonFactory()
-                    .createGenerator(new FileOutputStream(jsonFile));
-            //for pretty printing
-            jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
-            jsonGenerator.writeStartObject(); // start root object
+            if ((getImgURL() != null) && (!getImgURL().toString().isEmpty())) {
+                FileUtils.copyURLToFile(getImgURL(), getHashPath().toFile());
+                File jsonFile = Files.createTempFile("PHash", ".JSON").toFile();
+                jsonFile.deleteOnExit();
+                JsonGenerator jsonGenerator = new JsonFactory()
+                        .createGenerator(new FileOutputStream(jsonFile));
+                //for pretty printing
+                jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
+                jsonGenerator.writeStartObject(); // start root object
 
-            jsonGenerator.writeStringField("Algorithm", "Perceive Hash");
-            jsonGenerator.writeStringField("Image URL", getImgURL().toString());
-            for (int i =getStart(); i <= getEnd(); i++) {
-                setNoBit(i * i);
-                jsonGenerator.writeNumberField("Hash number", i);
-                jsonGenerator.writeNumberField("Hash number of bit", getNoBit());
-                jsonGenerator.writeStringField("Hash value", getPHash().getHashValue().toString());
+                jsonGenerator.writeStringField("Algorithm", "Perceive Hash");
+                jsonGenerator.writeStringField("Image URL", getImgURL().toString());
+                if ((getStart() < 1) || (getEnd() < 1) || (getStart() > getEnd())) {
+                    reply.add("Both start and end have to be positive and start value has to be less or equal to end value");
+                    return reply;
+                }
+                for (int i = getStart(); i <= getEnd(); i++) {
+                    setNoBit(i * i);
+                    jsonGenerator.writeNumberField("Hash number", i);
+                    jsonGenerator.writeNumberField("Hash number of bit", getNoBit());
+                    jsonGenerator.writeStringField("Hash value", getPHash().getHashValue().toString());
+                }
+                jsonGenerator.writeEndObject();
+                jsonGenerator.flush();
+                jsonGenerator.close();
+
+                reply = Files.readAllLines(jsonFile.toPath());
             }
-            jsonGenerator.writeEndObject();
-            jsonGenerator.flush();
-            jsonGenerator.close();
-
-            reply = Files.readAllLines(jsonFile.toPath());
+            else {
+                reply.add("The URL has to defined");
+            }
         } catch (IOException e) {
             reply.add("A file error appeared.");
             log.error("A file error appeared", e);
