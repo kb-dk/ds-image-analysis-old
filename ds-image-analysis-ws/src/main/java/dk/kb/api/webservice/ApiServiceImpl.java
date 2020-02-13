@@ -6,14 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.nio.file.Path;
 import java.util.List;
 
 public class ApiServiceImpl  implements DefaultApi {
 
     private static final Logger log = LoggerFactory.getLogger(ApiServiceImpl.class);
-    private Path imgHash;
-    private int hashSize;
 
     public ApiServiceImpl() {
     }
@@ -40,11 +37,17 @@ public class ApiServiceImpl  implements DefaultApi {
         return pHash.generateJSON();
     }
 
+    /**
+     * Returns the distance between the two hashvalues, which is calculated by going through each binary
+     * hash value and increase the distance by one for each bit. This can be done by xoring the 2 hash values.
+     * @param hash1
+     * @param hash2
+     * @return The distance beween the 2 hash values.
+     */
     @Override
     public DistanceReplyDto getHashDistance(String hash1, String hash2) {
         DistanceReplyDto reply = new DistanceReplyDto();
-        if ((hash1 != null) && (!hash1.isEmpty()) &&
-                (hash1 != null) && (!hash1.isEmpty())) {
+        if ((hash1 != null) && (!hash1.isEmpty()) && (hash2 != null) && (!hash2.isEmpty())) {
             try {
                 BigInteger numHash1 = new BigInteger(hash1);
                 BigInteger numHash2 = new BigInteger(hash2);
@@ -53,25 +56,27 @@ public class ApiServiceImpl  implements DefaultApi {
                     return reply;
                 }
 
-                int distanceBits = 0;
-                // Increase distanceBits by going through the xor'ed number
+                int distance = 0;
+                // Increase distance by going through the xor'ed number
                 BigInteger x = numHash1.xor(numHash2);
                 while (x.compareTo(BigInteger.ZERO) == 1)
                 {
-                    // Similar to distanceBits += x & 1
+                    // Similar to distance += x & 1
                     if (x.and(BigInteger.ONE).compareTo(BigInteger.ZERO) == 1) {
-                        distanceBits++;
+                        distance++;
                     }
                     x = x.shiftRight(1);
                 }
-                reply.setMessage(Integer.toString(distanceBits));
+                reply.setMessage(String.valueOf(distance));
             } catch (NumberFormatException nfe) {
-                reply.setMessage("Both values has to be BigInteger");
+                reply.setMessage("Both values have to be BigInteger");
+                log.error("Both values have to be BigInteger", nfe);
                 return reply;
             }
         }
         else {
-            reply.setMessage("The two hash values has to be present");
+            reply.setMessage("Both values have to be defined");
+            log.warn("Both values have to be defined");
         }
         return reply;
     }
