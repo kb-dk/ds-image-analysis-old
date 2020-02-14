@@ -32,7 +32,14 @@ public class DHash extends ImageHash {
         this.precision = precision;
     }
 
-    public DHash(String imgURL, int start, int end){
+    /**
+     * Instantiation of the DHash class, which besides initiation of imgURL, start and stop
+     * creates a temporary file, which is ordered to delete itself after use.
+     * @param imgURL URL of the image
+     * @param start The first DHash value that is be generated
+     * @param end The last DHash value that is be generated
+     */
+    public DHash(String imgURL, Integer start, Integer end){
         super(imgURL, start, end);
         try {
             setHashPath(Files.createTempFile("image", ".hash"));
@@ -42,6 +49,15 @@ public class DHash extends ImageHash {
         }
     }
 
+    /**
+     * Generate DHash JSON
+     * @return A list of string which includes the URL to the image on which the DHash value is calculated.
+     * The list has
+     * - the index number
+     * - the number of bits that it is generated from
+     * - hash precision (Simple, Double, Triple)
+     * - the calculated DHash number (BigInteger converted to string)
+     */
     protected List<String> generateJSON() {
         List<String> reply = new LinkedList<>();
         try {

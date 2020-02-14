@@ -16,9 +16,15 @@ public class ApiServiceImpl  implements DefaultApi {
     }
 
     /**
-     * Returns the discrete hash values of the image in imgURL
-     * @param imgURL The path to the image given to the webservice.
-     * @return The discrete hash values
+     * Generates a list of difference hash values of the image in imgURL and returns it as a JSON
+     * @param imgURL The URL of the image given to the webservice.
+     * @param start The first DHash value that should be generated
+     * @param end The last DHash value that should be generated
+     * @return A JSON list with URL of the image and a list of hash values with
+     * - index of the value
+     * - how many bits the index is
+     * - the precision of the hash value (Simple, Double, Triple)
+     * - the generated hash value
      */
     @Override
     public List<String> getImageDHash(String imgURL, Integer start, Integer end) {
@@ -27,9 +33,14 @@ public class ApiServiceImpl  implements DefaultApi {
     }
 
     /**
-     * Returns the perceptive hash value of the image in imgURL
-     * @param imgURL The path to the image given to the webservice.
-     * @return The perceptive hash value
+     * Generates a list of perceptual hash values of the image in imgURL and returns it as a JSON
+     * @param imgURL The URL of the image given to the webservice.
+     * @param start The first PHash value that should be generated
+     * @param end The last PHash value that should be generated
+     * @return A JSON list with URL of the image and a list of hash values with
+     * - index of the value
+     * - how many bits the index is
+     * - the generated hash value
      */
     @Override
     public List<String> getImagePHash(String imgURL, Integer start, Integer end) {
@@ -38,11 +49,11 @@ public class ApiServiceImpl  implements DefaultApi {
     }
 
     /**
-     * Returns the distance between the two hashvalues, which is calculated by going through each binary
-     * hash value and increase the distance by one for each bit. This can be done by xoring the 2 hash values.
+     * Returns the distance between the two hash values, which is calculated by going through each binary
+     * hash value and increase the distance by one for each bit that is different.
      * @param hash1
      * @param hash2
-     * @return The distance beween the 2 hash values.
+     * @return The distance between the 2 hash values.
      */
     @Override
     public DistanceReplyDto getHashDistance(String hash1, String hash2) {

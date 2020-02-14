@@ -44,11 +44,11 @@ public abstract class ImageHash {
         this.hashPath = hashPath;
     }
 
-    public ImageHash(String imgURL, int start, int end) {
+    public ImageHash(String imgURL, Integer start, Integer end) {
         try {
             this.imgURL = new URL(imgURL);
-            this.start = start;
-            this.end = end;
+            this.start = start == null ? 1 : start;
+            this.end = end == null ? 16 : end;
         } catch (MalformedURLException e) {
             log.error("A file error appeared", e);
         }
