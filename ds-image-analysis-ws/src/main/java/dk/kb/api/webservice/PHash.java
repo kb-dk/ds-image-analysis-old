@@ -23,7 +23,14 @@ public class PHash extends ImageHash {
 
     private static final Logger log = LoggerFactory.getLogger(PHash.class);
 
-    public PHash(String imgURL, int start, int end){
+    /**
+     * Instantiation of the PHash class, which besides initiation of imgURL, start and stop
+     * creates a temporary file, which is ordered to delete itself after use.
+     * @param imgURL URL of the image
+     * @param start The first PHash value that should be generated
+     * @param end The last PHash value that should be generated
+     */
+    public PHash(String imgURL, Integer start, Integer end){
         super(imgURL, start, end);
         try {
             setHashPath(Files.createTempFile("image", ".hash"));
@@ -33,6 +40,14 @@ public class PHash extends ImageHash {
         }
     }
 
+    /**
+     * Generate PHash JSON
+     * @return A JSON list of strings which includes the URL to the image on which the DHash value is calculated.
+     * The list has
+     * - the index number
+     * - the number of bits that it is generated from
+     * - the calculated PHash number (BigInteger converted to string)
+     */
     protected List<String> generateJSON() {
         List<String> reply = new LinkedList<String>();
         try {

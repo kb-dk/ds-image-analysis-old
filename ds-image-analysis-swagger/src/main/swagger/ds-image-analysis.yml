@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   version: 1.0.0
-  title: Picture Hash
+  title: Image Analysis
   license:
     name: Apache 2.0
 servers:
@@ -23,16 +23,20 @@ paths:
         - name: start
           in: query
           description: 'Roughness of the hash given as integer. 1 is the lowest.'
-          required: true
+          required: false
           schema:
             type: integer
-            example: 1
+            minimum: 1
+            maximum: 32
+            example: 3
         - name: end
           in: query
-          description: 'End value as integer.'
-          required: true
+          description: 'End value as integer. 32 is the largest.'
+          required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 32
             example: 8
       responses:
         '200':
@@ -40,7 +44,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HashArrayReply'
+                $ref: '#/components/schemas/HashReply'
   # Displays the PHash value
   /imagePHash:
     get:
@@ -57,16 +61,20 @@ paths:
         - name: start
           in: query
           description: 'Start of the hash precision scale given as integer. 1 is the lowest.'
-          required: true
+          required: false
           schema:
             type: integer
-            example: 1
+            minimum: 1
+            maximum: 32
+            example: 3
         - name: end
           in: query
           description: 'End of the hash precision scale given as integer.'
-          required: true
+          required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 32
             example: 8
       responses:
         '200':
@@ -74,7 +82,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HashArrayReply'
+                $ref: '#/components/schemas/HashReply'
   # Displays the distance between two hash values.
   /hashDistance:
     get:
@@ -104,7 +112,7 @@ paths:
                 $ref: '#/components/schemas/DistanceReply'
 components:
   schemas:
-    HashArrayReply:
+    HashReply:
       type: array
       items:
         type: string
