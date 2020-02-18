@@ -1,15 +1,14 @@
 openapi: 3.0.2
 info:
   version: 1.0.0
-  title: Picture Hash
+  title: Image Analysis
   license:
     name: Apache 2.0
 servers:
   - url:  /ds-image-analysis/api
 paths:
-  # Displays the DHash value given an URL like
-  #   http://localhost:8080/ds-image-analysis/api/imageDHash/imgURL/?imgURL=<path to the image>
-  /imageDHash/imgURL:
+  # Displays the DHash value
+  /imageDHash:
     get:
       summary: 'Request imageDHash from an image at the Royal Danish Library'
       operationId: getImageDHash
@@ -20,47 +19,90 @@ paths:
           required: true
           schema:
             type: string
+            example: http://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg
+        - name: start
+          in: query
+          description: 'Roughness of the hash given as integer. 1 is the lowest.'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 32
+            example: 3
+        - name: end
+          in: query
+          description: 'End value as integer. 32 is the largest.'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 32
+            example: 8
       responses:
         '200':
-          description: 'The returned value will be a string of a combination of the following values: The hash size ( 20, 42, 72, 110, 156, 210, 272), the precision of the DHash (Simple, double, triple) and finally the DHash value as a BigInteger for the image'
+          description: 'The returned value will be a string of a combination of the following values: The hash size ( 2, 6, 12, 20, 42, 72, 110, 156, 210, 272), the precision of the DHash (Simple, double, triple) and finally the DHash value as a BigInteger for the image'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HashReply'
-  # Displays the PHash value given an URL like
-  #   http://localhost:8080/ds-image-analysis/api/imagePHash/imgURL/?imgURL=<path to the image>
-
-  /imagePHash/imgURL:
+  # Displays the PHash value
+  /imagePHash:
     get:
       summary: 'Request image PHash from an image at the given imgURL'
       operationId: getImagePHash
       parameters:
         - name: imgURL
           in: query
-          description: 'URL for the image'
+          description: 'URL of the image'
           required: true
           schema:
             type: string
+            example: http://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg
+        - name: start
+          in: query
+          description: 'Start of the hash precision scale given as integer. 1 is the lowest.'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 32
+            example: 3
+        - name: end
+          in: query
+          description: 'End of the hash precision scale given as integer.'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 32
+            example: 8
       responses:
         '200':
-          description: 'The returned value will be a string of a combination of the following values: The hash size (16, 46, 64, 100, 144, 196, 256) and the PHash value as a BigInteger for the image'
+          description: 'The returned value will be a string of a combination of the following values: The hash size (1, 4, 9, 16, 46, 64, 100, 144, 196, 256) and the PHash value as a BigInteger for the image'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HashReply'
-  # Displays the distance between two hash values that are entered separated by a ;. URL like
-  # http://localhost:8080/ds-image-analysis/api/hashDistance/hashes/?hashes=1243121;32355232
-  /hashDistance/hashes:
+  # Displays the distance between two hash values.
+  /hashDistance:
     get:
-      summary: 'Request the two hash values divided by a ; character. Each hash value should be BigInteger'
+      summary: 'Request the two hash values. Each hash value is a BigInteger'
       operationId: getHashDistance
       parameters:
-        - name: hashes
+        - name: hash1
           in: query
-          description: 'Hash values divided by a ; character'
+          description: 'BigInteger hash value as a string'
           required: true
           schema:
             type: string
+            example: 10
+        - name: hash2
+          in: query
+          description: 'BigInteger Hash value as a string '
+          required: true
+          schema:
+            type: string
+            example: 20
       responses:
         '200':
           description: 'Distance between the two hash values (hamming distance)'
@@ -71,17 +113,14 @@ paths:
 components:
   schemas:
     HashReply:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: 'BigInteger hash value converted to a string from the API'
+      type: array
+      items:
+        type: string
+        description: 'BigInteger hash value converted to a string from the API'
     DistanceReply:
       type: object
       required:
-        - message
+        - distance
       properties:
         message:
           type: string

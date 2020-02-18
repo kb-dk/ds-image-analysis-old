@@ -1,199 +1,95 @@
 package dk.kb.api.webservice;
 
-import com.github.kilianB.hash.Hash;
-import com.github.kilianB.hashAlgorithms.DifferenceHash;
-import com.github.kilianB.hashAlgorithms.HashingAlgorithm;
-import com.github.kilianB.hashAlgorithms.PerceptiveHash;
 import dk.kb.api.DefaultApi;
 import dk.kb.model.DistanceReplyDto;
-import dk.kb.model.HashReplyDto;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.List;
 
 public class ApiServiceImpl  implements DefaultApi {
 
-    private Path uniquePath;
-    private int hashSize;
-    private StringBuilder replyBuilder = new StringBuilder();
     private static final Logger log = LoggerFactory.getLogger(ApiServiceImpl.class);
 
     public ApiServiceImpl() {
     }
 
-    public Path getUniquePath() {
-        return uniquePath;
-    }
-
-    public void setUniquePath(Path uniquePath) {
-        this.uniquePath = this.uniquePath == null ? uniquePath : this.uniquePath;
+    /**
+     * Generates a list of difference hash values of the image in imgURL and returns it as a JSON
+     * @param imgURL The URL of the image given to the webservice.
+     * @param start The first DHash value that should be generated
+     * @param end The last DHash value that should be generated
+     * @return A JSON list with URL of the image and a list of hash values with
+     * - index of the value
+     * - how many bits the index is
+     * - the precision of the hash value (Simple, Double, Triple)
+     * - the generated hash value
+     */
+    @Override
+    public List<String> getImageDHash(String imgURL, Integer start, Integer end) {
+        DHash dHash = new DHash(imgURL, start, end);
+        return dHash.generateJSON();
     }
 
     /**
-     * Find the distance between two hash values
-     * @param hashes The string with two BigInteger hash values separated by a ; character
-     * @return The hamming distance between the two hash values
+     * Generates a list of perceptual hash values of the image in imgURL and returns it as a JSON
+     * @param imgURL The URL of the image given to the webservice.
+     * @param start The first PHash value that should be generated
+     * @param end The last PHash value that should be generated
+     * @return A JSON list with URL of the image and a list of hash values with
+     * - index of the value
+     * - how many bits the index is
+     * - the generated hash value
      */
     @Override
-    public DistanceReplyDto getHashDistance(String hashes) {
+    public List<String> getImagePHash(String imgURL, Integer start, Integer end) {
+        PHash pHash = new PHash(imgURL, start, end);
+        return pHash.generateJSON();
+    }
+
+    /**
+     * Returns the distance between the two hash values, which is calculated by going through each binary
+     * hash value and increase the distance by one for each bit that is different.
+     * @param hash1
+     * @param hash2
+     * @return The distance between the 2 hash values.
+     */
+    @Override
+    public DistanceReplyDto getHashDistance(String hash1, String hash2) {
         DistanceReplyDto reply = new DistanceReplyDto();
-        if ((hashes != null) && (!hashes.isEmpty()) && (hashes.contains(";"))) {
-            String[] hashValues = hashes.split(";");
+        if ((hash1 != null) && (!hash1.isEmpty()) && (hash2 != null) && (!hash2.isEmpty())) {
             try {
-                BigInteger hash1 = new BigInteger(hashValues [0]);
-                BigInteger hash2 = new BigInteger(hashValues[1]);
-                if ((hash1.compareTo(BigInteger.ZERO) == -1) || (hash2.compareTo(BigInteger.ZERO) == -1)) {
-                    reply.setMessage("Both hash values has to be positive");
+                BigInteger numHash1 = new BigInteger(hash1);
+                BigInteger numHash2 = new BigInteger(hash2);
+                if ((numHash1.compareTo(BigInteger.ZERO) == -1) || (numHash2.compareTo(BigInteger.ZERO) == -1)) {
+                    reply.setMessage("Both hash values have to be positive");
                     return reply;
                 }
 
-                int distanceBits = 0;
-                // Increase distanceBits by going through the xor'ed number
-                BigInteger x = hash1.xor(hash2);
+                int distance = 0;
+                // Increase distance by going through the xor'ed number
+                BigInteger x = numHash1.xor(numHash2);
                 while (x.compareTo(BigInteger.ZERO) == 1)
                 {
-                    // Similar to distanceBits += x & 1
+                    // Similar to distance += x & 1
                     if (x.and(BigInteger.ONE).compareTo(BigInteger.ZERO) == 1) {
-                        distanceBits++;
+                        distance++;
                     }
                     x = x.shiftRight(1);
                 }
-                reply.setMessage(Integer.toString(distanceBits));
+                reply.setMessage(String.valueOf(distance));
             } catch (NumberFormatException nfe) {
-                reply.setMessage("Both values has to be BigInteger separated by ; character");
+                reply.setMessage("Both values have to be BigInteger");
+                log.error("Both values have to be BigInteger", nfe);
                 return reply;
             }
         }
         else {
-            reply.setMessage("The two hash values has to be divided by ; character");
+            reply.setMessage("Both values have to be defined");
+            log.warn("Both values have to be defined");
         }
         return reply;
     }
 
-    /**
-     * Returns the discrete hash values of the image in imgURL
-     * @param imgURL The path to the image given to the webservice.
-     * @return The discrete hash values
-     */
-    @Override
-    public HashReplyDto getImageDHash(String imgURL) {
-        HashReplyDto reply = new HashReplyDto();
-        try {
-            try {
-                File imgHash = getFile(imgURL);
-
-                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Simple);
-                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Double);
-                hashValue(replyBuilder, imgHash, DifferenceHash.Precision.Triple);
-                reply.setMessage(replyBuilder.toString());
-            } catch (MalformedURLException e) {
-                reply.setMessage("The URL: " + imgURL + " is malformed. Please use a valid URL");
-                log.error("The URL: " + imgURL + " is malformed", e);
-            } finally {
-                Files.deleteIfExists(getUniquePath());
-            }
-        } catch (IOException ex) {
-            reply.setMessage("A file error appeared.");
-            log.error("A file error appeared", ex);
-        }
-        return reply;
-    }
-
-    private void hashValue(StringBuilder replyBuilder, File imgHash, DifferenceHash.Precision precision) throws IOException {
-        for (int i = 4; i <= 16; i++) {
-            hashSize = i*(i+1);
-            replyBuilder
-                    .append(hashSize)
-                    .append(",")
-                    .append(precision)
-                    .append(",")
-                    .append(getDHash(imgHash, hashSize, precision).getHashValue().toString())
-                    .append(" ");
-        }
-    }
-
-    private void hashValue(StringBuilder replyBuilder, File imgHash) throws IOException {
-        for (int i = 4; i <= 16; i++) {
-            hashSize = i*i;
-            replyBuilder
-                    .append(hashSize)
-                    .append(",")
-                    .append(getPHash(imgHash, hashSize).getHashValue().toString())
-                    .append(" ");
-        }
-    }
-
-    private Hash getDHash(File imgHash, int noBit, DifferenceHash.Precision precision) throws IOException {
-        HashingAlgorithm hashAlg = new DifferenceHash(noBit, precision);
-        return hashAlg.hash(imgHash);
-    }
-
-    private Hash getPHash(File imgHash, int noBit) throws IOException {
-        HashingAlgorithm hashAlg = new PerceptiveHash(noBit);
-        return hashAlg.hash(imgHash);
-    }
-
-    private String toBinary(int noBit, DifferenceHash.Precision precision, BigInteger hashValue) {
-        String hash = hashValue.toString(2);
-        int numZeros = noBit;
-        if (precision == DifferenceHash.Precision.Double) {numZeros = 2 * noBit;}
-        if (precision == DifferenceHash.Precision.Triple) {numZeros = 3 * noBit;}
-        numZeros -= hash.length();
-        String pad = StringUtils.repeat("0", numZeros);
-        return pad + hash;
-    }
-
-    private String toBinary(int noBit, BigInteger hashValue) {
-        String hash = hashValue.toString(2);
-        int numZeros = noBit - hash.length();
-        String pad = StringUtils.repeat("0", numZeros);
-        return pad + hash;
-    }
-
-    /**
-     * Returns the perceptive hash value of the image in imgURL
-     * @param imgURL The path to the image given to the webservice.
-     * @return The perceptive hash value
-     */
-    @Override
-    public HashReplyDto getImagePHash(String imgURL) {
-        HashReplyDto reply = new HashReplyDto();
-        try {
-            File imgHash = getFile(imgURL);
-            HashingAlgorithm pHashAlg = new PerceptiveHash(64);
-            doHash(reply, imgHash);
-        } catch (MalformedURLException e) {
-            reply.setMessage("The URL: " + imgURL + " is malformed. Please use a valid URL");
-            log.error("The URL: " + imgURL + " is malformed", e);
-        } catch (IOException e) {
-            reply.setMessage("A file error appeared.");
-            log.error("A file error appeared", e);
-        }
-
-        return reply;
-    }
-
-
-    private void doHash(HashReplyDto reply, File imgHash) throws IOException {
-        hashValue(replyBuilder, imgHash);
-        reply.setMessage(replyBuilder.toString());
-        Files.deleteIfExists(getUniquePath());
-    }
-
-    private File getFile(String imgPath) throws IOException {
-        setUniquePath(Files.createTempFile("image", "jpg"));
-        URL webImage = new URL(imgPath);
-        File imgHash = new File(String.valueOf(getUniquePath()));
-        FileUtils.copyURLToFile(webImage, imgHash);
-        return imgHash;
-    }
 }

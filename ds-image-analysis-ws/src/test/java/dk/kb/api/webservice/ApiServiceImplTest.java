@@ -11,63 +11,65 @@ class ApiServiceImplTest {
     void getImageDHash() {
         String url = "http://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg";
         ApiServiceImpl tester = new ApiServiceImpl();
-        String result = tester.getImageDHash(url).toString();
-        Assertions.assertTrue(result.contains("message: 379723421694405058899193996058950688972138258217989017426890367"));
+        String result = tester.getImageDHash(url, 1, 8).toString();
+        Assertions.assertTrue(result.contains("520707519"));
+        result = tester.getImageDHash(url,  -1, 8).toString();
+        Assertions.assertTrue(result.contains("Both start and end have to be positive and start value has to be less or equal to end value"));
+        result = tester.getImageDHash(url,  8, 1).toString();
+        Assertions.assertTrue(result.contains("Both start and end have to be positive and start value has to be less or equal to end value"));
         url = "https://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg";
-        result = tester.getImageDHash(url).toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImageDHash(null).toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImageDHash("").toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImageDHash("https://test").toString();
-        Assertions.assertTrue(result.contains("message: null"));
+        result = tester.getImageDHash(url, 1, 8).toString();
+        Assertions.assertTrue(result.contains("A file error appeared"));
+        result = tester.getImageDHash(null, 1, 8).toString();
+        Assertions.assertTrue(result.contains("The URL has to defined"));
+        result = tester.getImageDHash("", 1, 8).toString();
+        Assertions.assertTrue(result.contains("The URL has to defined"));
+        result = tester.getImageDHash("https://test",  1, 8).toString();
+        Assertions.assertTrue(result.contains("A file error appeared"));
     }
 
     @Test
     void getImagePHash() {
         String url = "http://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg";
         ApiServiceImpl tester = new ApiServiceImpl();
-        String result = tester.getImagePHash(url).toString();
-        Assertions.assertTrue(result.contains("message: 17667239340915791203"));
+        String result = tester.getImagePHash(url,  1, 8).toString();
+        Assertions.assertTrue(result.contains("17997"));
+        result = tester.getImagePHash(url,  -1, 8).toString();
+        Assertions.assertTrue(result.contains("Both start and end have to be positive and start value has to be less or equal to end value"));
+        result = tester.getImagePHash(url,  8, 1).toString();
+        Assertions.assertTrue(result.contains("Both start and end have to be positive and start value has to be less or equal to end value"));
         url = "https://kb-images.kb.dk/DAMJP2/online_master_arkiv/non-archival/KOB/bs_kistebilleder-2/bs000001/full/!345,2555/0/native.jpg";
-        result = tester.getImagePHash(url).toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImagePHash(null).toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImagePHash("").toString();
-        Assertions.assertTrue(result.contains("message: null"));
-        result = tester.getImagePHash("https://test").toString();
-        Assertions.assertTrue(result.contains("message: null"));
+        result = tester.getImagePHash(url,  1, 8).toString();
+        Assertions.assertTrue(result.contains("A file error appeared"));
+        result = tester.getImagePHash(null,  1, 8).toString();
+        Assertions.assertTrue(result.contains("The URL has to defined"));
+        result = tester.getImagePHash("",  1, 8).toString();
+        Assertions.assertTrue(result.contains("The URL has to defined"));
+        result = tester.getImagePHash("https://test",  1, 8).toString();
+        Assertions.assertTrue(result.contains("A file error appeared"));
     }
 
     @Test
     void getHashDistance() {
         ApiServiceImpl tester = new ApiServiceImpl();
         String result = "";
-        result = tester.getHashDistance("4;1").toString();
+        result = tester.getHashDistance("4","1").toString();
         Assertions.assertTrue(result.contains("message: 2"));
-        result = tester.getHashDistance("-4;1").toString();
-        Assertions.assertTrue(result.contains("message: Both hash values has to be positive"));
-        result = tester.getHashDistance("4;-11").toString();
-        Assertions.assertTrue(result.contains("message: Both hash values has to be positive"));
-        result = tester.getHashDistance("-4;-11").toString();
-        Assertions.assertTrue(result.contains("message: Both hash values has to be positive"));
-        result = tester.getHashDistance("abc;def").toString();
-        Assertions.assertTrue(result.contains("message: Both values has to be BigInteger separated by ; character"));
-        result = tester.getHashDistance("abc;def;ghi").toString();
-        Assertions.assertTrue(result.contains("message: Both values has to be BigInteger separated by ; character"));
-        result = tester.getHashDistance("").toString();
-        Assertions.assertTrue(result.contains("message: The two hash values has to be divided by ; character"));
-        result = tester.getHashDistance(null).toString();
-        Assertions.assertTrue(result.contains("message: The two hash values has to be divided by ; character"));
-        result = tester.getHashDistance("4;;1").toString();
-        Assertions.assertTrue(result.contains("message: Both values has to be BigInteger separated by ; character"));
-        result = tester.getHashDistance("4;4").toString();
+        result = tester.getHashDistance("-4","1").toString();
+        Assertions.assertTrue(result.contains("message: Both hash values have to be positive"));
+        result = tester.getHashDistance("4","-11").toString();
+        Assertions.assertTrue(result.contains("message: Both hash values have to be positive"));
+        result = tester.getHashDistance("-4","-11").toString();
+        Assertions.assertTrue(result.contains("message: Both hash values have to be positive"));
+        result = tester.getHashDistance("abc","def").toString();
+        Assertions.assertTrue(result.contains("message: Both values have to be BigInteger"));
+        result = tester.getHashDistance("", "").toString();
+        Assertions.assertTrue(result.contains("message: Both values have to be defined"));
+        result = tester.getHashDistance(null, null).toString();
+        Assertions.assertTrue(result.contains("message: Both values have to be defined"));
+        result = tester.getHashDistance("4","4").toString();
         Assertions.assertTrue(result.contains("message: 0"));
-        result = tester.getHashDistance("4;;1").toString();
-        Assertions.assertTrue(result.contains("message: Both values has to be BigInteger separated by ; character"));
-        result = tester.getHashDistance("00100011;100011100").toString();
+        result = tester.getHashDistance("00100011","100011100").toString();
         Assertions.assertTrue(result.contains("message: 19"));
     }
 }
