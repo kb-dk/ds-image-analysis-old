@@ -113,10 +113,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistanceReply'
-  /rest/ping:
+  /ping:
     get:
-      tags:
-        - "test"
       summary: Ping the server to check if the server is reachable.
       operationId: ping
       responses:
