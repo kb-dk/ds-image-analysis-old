@@ -47,7 +47,7 @@
         <!-- Enable forbiddenapis plugin, do disable set to none -->
         <api.check.phase>process-classes</api.check.phase>
 
-        <org.apache.cxf.version>3.3.4</org.apache.cxf.version>
+        <org.apache.cxf.version>3.3.5</org.apache.cxf.version>
         <swagger-ui.version>3.24.3</swagger-ui.version>
         <org.slf4j.version>1.7.29</org.slf4j.version>
     </properties>
@@ -74,6 +74,20 @@
     </developers>
 
     <build>
-        <finalName>ds-image-analysis</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>10.0.0.alpha1</version>
+                <configuration>
+                    <useTestScope>true</useTestScope>
+                    <webApp>
+                        <contextPath>/ds-image-analysis-ws/</contextPath>
+                        <descriptor>${project.basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
+                    </webApp>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

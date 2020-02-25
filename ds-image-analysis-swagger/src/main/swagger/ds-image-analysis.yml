@@ -6,6 +6,9 @@ info:
     name: Apache 2.0
 servers:
   - url:  /ds-image-analysis/api
+    description: "Tomcat server installation"
+  - url:  /ds-image-analysis-ws/api
+    description: "Jetty server installation"
 paths:
   # Displays the DHash value
   /imageDHash:
@@ -110,6 +113,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistanceReply'
+  /rest/ping:
+    get:
+      tags:
+        - "test"
+      summary: Ping the server to check if the server is reachable.
+      operationId: ping
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '406':
+          description: Not Acceptable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     HashReply:
@@ -125,3 +153,14 @@ components:
         message:
           type: string
           description: 'The distance between the two hash values.'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
