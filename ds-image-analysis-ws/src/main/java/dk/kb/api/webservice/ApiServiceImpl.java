@@ -1,7 +1,6 @@
 package dk.kb.api.webservice;
 
 import dk.kb.api.DefaultApi;
-import dk.kb.api.utilities.RESTUtil;
 import dk.kb.model.DistanceReplyDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import java.util.List;
 public class ApiServiceImpl  implements DefaultApi {
 
     private static final Logger log = LoggerFactory.getLogger(ApiServiceImpl.class);
-    private static RESTUtil rest;
 
     public ApiServiceImpl() {
     }
@@ -48,6 +46,15 @@ public class ApiServiceImpl  implements DefaultApi {
     public List<String> getImagePHash(String imgURL, Integer start, Integer end) {
         PHash pHash = new PHash(imgURL, start, end);
         return pHash.generateJSON();
+    }
+
+    /**
+     * Simple ping to see if there is connection to the service
+     * @return OK
+     */
+    @Override
+    public String ping() {
+        return "OK";
     }
 
     /**
