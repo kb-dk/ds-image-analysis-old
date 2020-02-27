@@ -20,7 +20,7 @@ if the value is below 10 the images are very similar.
 Image analysis can be accessed either through TomCat (local installation of TomCat 9 required) or through jetty (local installation is not required). <br>
 
 The project is configured to run Jetty locally as well (local installation is not required). <br>
-It is important to use ```jetty: run-war``` when starting jetty server. It wraps the application in a war file first and deploys to Jetty server afterwards. Jetty is watching the pom.xml file and re-deploying the application as soon as there are changes.
+It is important to use ```jetty: run-war``` when starting jetty server. It wraps the application in a war file first and deploys to Jetty server afterwards. When pom.xml is changed, jetty re-deploying the application.
 
 ### Jetty
 http://localhost:8080/ds-image-analysis-ws/swagger-ui/index.html <br>
