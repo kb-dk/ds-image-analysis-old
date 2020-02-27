@@ -1,7 +1,9 @@
 package dk.kb.api.webservice;
 
 import dk.kb.api.DefaultApi;
+import dk.kb.model.DHashReplyDto;
 import dk.kb.model.DistanceReplyDto;
+import dk.kb.model.PHashReplyDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,14 +22,14 @@ public class ApiServiceImpl  implements DefaultApi {
      * @param imgURL The URL of the image given to the webservice.
      * @param start The first DHash value that should be generated
      * @param end The last DHash value that should be generated
-     * @return A JSON list with URL of the image and a list of hash values with
+     * @return A JSON list of hash values with
      * - index of the value
      * - how many bits the index is
      * - the precision of the hash value (Simple, Double, Triple)
      * - the generated hash value
      */
     @Override
-    public List<String> getImageDHash(String imgURL, Integer start, Integer end) {
+    public List<DHashReplyDto> getImageDHash(String imgURL, Integer start, Integer end) {
         DHash dHash = new DHash(imgURL, start, end);
         return dHash.generateJSON();
     }
@@ -37,13 +39,13 @@ public class ApiServiceImpl  implements DefaultApi {
      * @param imgURL The URL of the image given to the webservice.
      * @param start The first PHash value that should be generated
      * @param end The last PHash value that should be generated
-     * @return A JSON list with URL of the image and a list of hash values with
+     * @return A JSON list of hash values with
      * - index of the value
      * - how many bits the index is
      * - the generated hash value
      */
     @Override
-    public List<String> getImagePHash(String imgURL, Integer start, Integer end) {
+    public List<PHashReplyDto> getImagePHash(String imgURL, Integer start, Integer end) {
         PHash pHash = new PHash(imgURL, start, end);
         return pHash.generateJSON();
     }

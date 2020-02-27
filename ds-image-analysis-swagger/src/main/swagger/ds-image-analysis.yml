@@ -47,7 +47,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HashReply'
+                type: array
+                items:
+                  $ref: '#/components/schemas/DHashReply'
   # Displays the PHash value
   /imagePHash:
     get:
@@ -85,7 +87,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HashReply'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PHashReply'
   # Displays the distance between two hash values.
   /hashDistance:
     get:
@@ -138,11 +142,28 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    HashReply:
-      type: array
-      items:
-        type: string
-        description: 'BigInteger hash value converted to a string from the API'
+    PHashReply:
+      type: object
+      properties:
+        number:
+          type: integer
+        bit:
+          type: integer
+        value:
+          type: string
+          description: 'BigInteger hash value converted to a string from the API'
+    DHashReply:
+      type: object
+      properties:
+        number:
+          type: integer
+        bit:
+          type: integer
+        precision:
+          type: string
+        value:
+          type: string
+          description: 'BigInteger hash value converted to a string from the API'
     DistanceReply:
       type: object
       required:
