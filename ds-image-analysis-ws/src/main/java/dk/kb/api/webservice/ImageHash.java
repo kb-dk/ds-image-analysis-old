@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.List;
 
 public abstract class ImageHash {
     private static final Logger log = LoggerFactory.getLogger(ImageHash.class);
@@ -53,6 +52,4 @@ public abstract class ImageHash {
             log.error("A file error appeared", e);
         }
     }
-
-    protected abstract List<String> generateJSON();
 }

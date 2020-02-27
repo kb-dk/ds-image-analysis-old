@@ -1,18 +1,14 @@
 package dk.kb.api.webservice;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.github.kilianB.hash.Hash;
 import com.github.kilianB.hashAlgorithms.DifferenceHash;
 import com.github.kilianB.hashAlgorithms.HashingAlgorithm;
+import dk.kb.model.DHashReplyDto;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -58,61 +54,62 @@ public class DHash extends ImageHash {
      * - hash precision (Simple, Double, Triple)
      * - the calculated DHash number (BigInteger converted to string)
      */
-    protected List<String> generateJSON() {
-        List<String> reply = new LinkedList<>();
+    protected List<DHashReplyDto> generateJSON() {
+        List<DHashReplyDto> reply = new LinkedList<DHashReplyDto>();
+        DHashReplyDto error = new DHashReplyDto();
         try {
             if ((getImgURL() != null) && (!getImgURL().toString().isEmpty())) {
                 FileUtils.copyURLToFile(getImgURL(), getHashPath().toFile());
-                File jsonFile = Files.createTempFile("DHash", ".JSON").toFile();
-                jsonFile.deleteOnExit();
-                JsonGenerator jsonGenerator = new JsonFactory()
-                        .createGenerator(new FileOutputStream(jsonFile));
-                //for pretty printing
-                jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
-                jsonGenerator.writeStartObject(); // start root object
-
-                jsonGenerator.writeStringField("Algorithm", "Difference Hash");
-                jsonGenerator.writeStringField("Image URL", getImgURL().toString());
 
                 if ((getStart() < 1) || (getEnd() < 1) || (getStart() > getEnd())) {
-                    reply.add("Both start and end have to be positive and start value has to be less or equal to end value");
+                    error = replyError("Both start and end have to be positive and start value has to be less or equal to end value");
+                    reply.add(error);
                     return reply;
                 }
                 setPrecision(DifferenceHash.Precision.Simple);
-                hashValue(jsonGenerator);
+                hashValue(reply);
 
                 setPrecision(DifferenceHash.Precision.Double);
-                hashValue(jsonGenerator);
+                hashValue(reply);
 
                 setPrecision(DifferenceHash.Precision.Triple);
-                hashValue(jsonGenerator);
-                jsonGenerator.writeEndObject();
-
-                jsonGenerator.flush();
-                jsonGenerator.close();
-
-                reply = Files.readAllLines(jsonFile.toPath());
+                hashValue(reply);
             }
             else {
-                reply.add("The URL has to defined");
+                error = replyError("The URL has to defined");
+                reply.add(error);
             }
         } catch (IOException e) {
-            reply.add("A file error appeared.");
+            error = replyError("A file error appeared.");
+            reply.add(error);
             log.error("A file error appeared", e);
         } catch (Exception ex) {
-            reply.add("An unhandled exception happened");
+            error = replyError("An unhandled exception happened");
+            reply.add(error);
             log.error("An unhandled exception happened", ex);
         }
         return reply;
     }
 
-    private void hashValue(JsonGenerator jsonGenerator) throws IOException {
+    private DHashReplyDto replyError(String error) {
+        DHashReplyDto dHashReplyDto = new DHashReplyDto();
+        dHashReplyDto.setBit(0);
+        dHashReplyDto.setNumber(0);
+        dHashReplyDto.setPrecision("");
+        dHashReplyDto.setValue(error);
+        return dHashReplyDto;
+    }
+
+    private void hashValue(List<DHashReplyDto> replyList) throws IOException {
+        DHashReplyDto tmpDHash;
         for (int i = getStart(); i <= getEnd(); i++) {
             setNoBit(i*(i+1));
-            jsonGenerator.writeNumberField("Hash number", i);
-            jsonGenerator.writeNumberField("Hash number of bits", getNoBit());
-            jsonGenerator.writeStringField("Hash precision", String.valueOf(getPrecision()));
-            jsonGenerator.writeStringField("Hash value", getDHash().getHashValue().toString());
+            tmpDHash = new DHashReplyDto();
+            tmpDHash.setNumber(i);
+            tmpDHash.setBit(getNoBit());
+            tmpDHash.setPrecision(String.valueOf(getPrecision()));
+            tmpDHash.setValue(getDHash().getHashValue().toString());
+            replyList.add(tmpDHash);
         }
     }
 
