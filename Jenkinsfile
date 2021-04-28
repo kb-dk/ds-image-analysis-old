@@ -43,10 +43,10 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                     openshift.withProject(projectName) {
 
                         stage("Create build and deploy application") { 
-                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-pictureHash")
-                            openshift.startBuild("ds-pictureHash", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-pictureHash:latest")
-                            openshift.create("route", "edge", "--service=ds-pictureHash")
+                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-picture-hash")
+                            openshift.startBuild("ds-picture-hash", "--from-dir=.", "--follow")
+                            openshift.newApp("ds-picture-hash:latest")
+                            openshift.create("route", "edge", "--service=ds-picture-hash")
                         }
                     }
                 }
